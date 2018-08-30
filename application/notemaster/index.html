@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Notemaster</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+
+<div id="app">
+  <div class="container">
+    <h3> {{ title }} </h3>
+    <div class="form">
+      <div class="form-group">
+        <div class="form-group">
+          <label for="title"> Title </label>
+          <input class="form-control" type="text" v-model="note.title">
+        </div>
+        <div class="form-group">
+            <label for="text"> Text </label>
+            <textarea class="form-control" cols="30" rows="10" v-model="note.text"></textarea>
+        </div>
+      </div>
+      <button class="btn btn-primary" @click="addNote"> Add </button>
+      <br/> <br/>
+      <div class="col-sm-12">
+        <div v-if="!notes.length">
+          Tidak ada note!
+        </div>
+        <div class="col-sm-4 note" v-for="(note, index) in notes">
+          <div class="card">
+            <button class="btn btn-danger" @click="removeNote(index)">&times;</button>
+            <div class="card-block">
+              <h4 class="card-title">{{ note.title }}</h4>
+              <h6 class="card-subtitle mb-2 text-muted"> {{ note.date }} </h6>
+              <p class="card-text"> {{ note.text }} </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+<script src="https://unpkg.com/vue@2.5.17/dist/vue.js"></script>
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      title: 'Notemaster',
+      note: {
+        title: '',
+        text: ''
+      },
+      notes: [
+        {
+          title: 'Hello World!',
+          text: 'Lorem ipsum dolor sit ammet!',
+          date: new Date(Date.now()).toLocaleDateString()
+        }
+      ]
+    },
+    mounted() {
+      if(localStorage.getItem('notes')) {
+        this.notes = JSON.parse(localStorage.getItem('notes'))
+      }
+    },
+    watch: {
+      notes: {
+        handler() {
+          // console.log('Notes changed!');
+          localStorage.setItem('notes', JSON.stringify(this.notes));
+        },
+        deep: true,
+      },
+    },
+    methods: {
+      addNote() {
+        let {title, text} = this.note
+        this.notes.push({
+          title, 
+          text,
+          date: new Date(Date.now()).toLocaleString()
+        })
+      },
+      removeNote(index) {
+        this.notes.splice(index, 1)
+      }
+    }
+  })
+</script>
+</body>
+</html>
